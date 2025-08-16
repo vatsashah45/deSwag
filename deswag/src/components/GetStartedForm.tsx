@@ -17,8 +17,7 @@ export default function GetStartedForm() {
 
     setLoading(true);
     try {
-      // TODO: call backend to create/lookup embedded wallet session
-      // await api.post("/auth/nfc", { nfcCode: code.toUpperCase() });
+      // TODO: call backend
       setMsg("Success! Your wallet is ready to connect.");
     } catch {
       setMsg("Could not set up wallet. Try again.");
@@ -28,26 +27,27 @@ export default function GetStartedForm() {
   };
 
   return (
-    <div className="card w-full max-w-xl">
+    <div className="card card-hover w-full max-w-xl">
       <div className="p-6 md:p-8">
         <div className="flex items-center gap-2 mb-2">
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-black text-white">⚡</span>
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-slate-900 text-white">⚡</span>
           <h2 className="text-lg font-semibold">NFC Wallet Setup</h2>
         </div>
         <p className="text-sm text-slate-600 mb-6">Scan or enter your NFC code to get started</p>
 
         <form onSubmit={onSubmit} className="space-y-4">
-          <label className="block text-sm font-medium">NFC Code</label>
-          <input
-            inputMode="text"
-            placeholder="Enter your 8-digit NFC code"
-            value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
-            className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-slate-300"
-          />
+          <div>
+            <label className="block text-sm font-medium">NFC Code</label>
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              placeholder="Enter your 8-character NFC code"
+              className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-200"
+            />
+          </div>
 
-          <button type="submit" disabled={loading} className="btn btn-primary w-full justify-center disabled:opacity-70">
-            {loading ? "Connecting..." : "Connect/Create Wallet"}
+          <button type="submit" disabled={loading} className="btn-primary w-full h-11 rounded-xl disabled:opacity-70">
+            {loading ? "Connecting..." : "Connect / Create Wallet"}
           </button>
 
           {msg && <div className="text-center text-sm pt-1 text-slate-700">{msg}</div>}
