@@ -77,7 +77,6 @@ export default function AdminPanel() {
   const claimItemForScan = async (itemId: string | number) => {
     setToast(null);
     const code = scannedNfc.trim().toUpperCase();
-    if (!/^[A-Z0-9]{8}$/.test(code)) { setToast("Invalid NFC code"); return; }
 
     try {
       setLoading(true);
