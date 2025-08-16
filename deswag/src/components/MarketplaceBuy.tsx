@@ -20,12 +20,14 @@ export default function MarketplaceBuy() {
     (async () => {
       try {
         const rows = await getActiveListings();
-
+        console.log(rows)
         const withImages = await Promise.all(
           rows.map(async (row) => {
+            console.log(row)
             if (row.image_url) {
               try {
                 const blob = await fetchBlob(row.image_url); // Walrus blob
+                console.log(blob)
                 const url = URL.createObjectURL(blob);
                 objectUrls.push(url);
                 return { ...row, imageUrl: url };

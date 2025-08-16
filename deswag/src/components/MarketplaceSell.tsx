@@ -21,23 +21,39 @@ export default function MarketplaceSell() {
     })();
   }, [evmAddress]);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!currentUser || !evmAddress) return alert("Please sign in");
-    if (!selected) return alert("Choose an item");
-    const val = Number(price);
-    if (!isFinite(val) || val <= 0) return alert("Invalid price");
+const submit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!currentUser || !evmAddress) return alert("Please sign in");
+  if (!selected) return alert("Choose an item");
+  const val = Number(price);
+  if (!isFinite(val) || val <= 0) return alert("Invalid price");
 
-    try {
-      await createListing({ userItemId: selected, priceEth: val, seller: evmAddress });
-      setItems((prev) => prev.map((it) => it.userItemId === selected ? { ...it, listed: true } : it));
-      setSelected(null);
-      setPrice("");
-      alert("Listed!");
-    } catch (e: any) {
-      alert(e?.message ?? "Listing failed");
-    }
-  };
+  try {
+    const selectedItem = items.find((it) => it.userItemId === selected);
+    if (!selectedItem) throw new Error("Item not found");
+
+    console.log(selectedItem)
+
+    await createListing({
+      userItemId: selected,
+      priceEth: val,
+      seller: evmAddress,
+      image_url: selectedItem.image_url, // 👈 pass through blobId
+    });
+
+    setItems((prev) =>
+      prev.map((it) =>
+        it.userItemId === selected ? { ...it, listed: true } : it
+      )
+    );
+    setSelected(null);
+    setPrice("");
+    alert("Listed!");
+  } catch (e: any) {
+    alert(e?.message ?? "Listing failed");
+  }
+};
+
 
   return (
     <div className="bg-[var(--card-bg)] backdrop-blur-xl rounded-2xl shadow-sm border border-[var(--card-border)] max-w-2xl">

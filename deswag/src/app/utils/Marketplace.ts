@@ -125,8 +125,10 @@ export async function createListing(opts: {
   userItemId: number;
   priceEth: number;
   seller: string; // wallet
+  image_url?: string | null;
 }) {
   const supabase = createClient();
+  console.log(opts.image_url)
   const { data, error } = await supabase
     .from("item_forsale")
     .insert({
@@ -134,6 +136,7 @@ export async function createListing(opts: {
       eth_price: opts.priceEth,
       seller: opts.seller.toLowerCase(),
       buyer: null,
+      image_url: opts.image_url ?? null,   // 👈 persist the blobId / url
     })
     .select("id")
     .single();
@@ -141,7 +144,6 @@ export async function createListing(opts: {
   if (error) throw error;
   return data?.id as number;
 }
-
 /** Cancel a listing you own (optional) */
 export async function cancelListing(listingId: number, seller: string) {
   const supabase = createClient();
