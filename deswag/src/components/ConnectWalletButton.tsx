@@ -1,30 +1,71 @@
+"use client";
+
+import { useRef, useState } from "react";
 import { useCurrentUser } from "@coinbase/cdp-hooks";
 import { AuthButton } from "@coinbase/cdp-react/components/AuthButton";
 import UserProfile from "./CDP/UserProfile";
-import { useState } from "react";
 
 export default function WalletStatus() {
   const { currentUser } = useCurrentUser();
-
   const [opened, setOpened] = useState(false);
 
+  // We'll mount the real AuthButton invisibly and click it programmatically
+  const authHostRef = useRef<HTMLDivElement>(null);
+  const openAuth = () => {
+    const realBtn = authHostRef.current?.querySelector("button");
+    realBtn?.click();
+  };
+
   if (!currentUser) {
-    return <AuthButton className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50" />;
+    return (
+      <div className="relative inline-block">
+        {/* invisible real button */}
+        <div
+          ref={authHostRef}
+          className="absolute inset-0 opacity-0 pointer-events-none"
+          aria-hidden="true"
+        >
+          <AuthButton />
+        </div>
+
+        {/* your styled button */}
+        <button
+          onClick={openAuth}
+          className="
+            px-5 h-10 rounded-xl
+            bg-gradient-to-r from-[var(--brand-500)] to-[var(--brand-600)]
+            text-white font-medium shadow
+            hover:shadow-md active:scale-[.98] transition
+            border border-white/40
+          "
+        >
+          Sign in
+        </button>
+      </div>
+    );
   }
 
   const addr = currentUser.evmAccounts?.[0] ?? "";
-
-  // short form (0x1234...abcd)
-  const short = addr ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : "";
+  const short = addr ? `${addr.slice(0, 6)}…${addr.slice(-4)}` : "Profile";
 
   return (
     <>
-      {
-        opened ? <UserProfile></UserProfile> : <></>
-      }
-      <div className="ellipsis max-w-36" onClick={() => setOpened((e) => !e)}>
+      {opened ? <UserProfile /> : null}
+
+      <button
+        onClick={() => setOpened((s) => !s)}
+        title={addr}
+        className="
+          px-3 py-1.5 rounded-full
+          bg-white/70 backdrop-blur
+          border border-[var(--card-border)]
+          text-[var(--ink)] font-medium
+          hover:bg-white transition
+          max-w-40 truncate
+        "
+      >
         {short}
-      </div>
+      </button>
     </>
   );
 }

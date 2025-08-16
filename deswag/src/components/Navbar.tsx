@@ -1,4 +1,5 @@
 "use client";
+import ConnectWalletButton from "@/components/ConnectWalletButton";
 export default function Navbar() {
   return (
     <header className="sticky top-0 z-30">
@@ -11,9 +12,7 @@ export default function Navbar() {
               <div className="text-[11px] text-[var(--muted)] -mt-0.5">NFC Swag Marketplace</div>
             </div>
           </div>
-          <button className="inline-flex h-10 px-5 items-center justify-center rounded-xl font-medium text-white shadow-sm hover:shadow-md active:scale-[.98] transition bg-gradient-to-r from-[var(--brand-500)] to-[var(--brand-600)]">
-            Connect Wallet
-          </button>
+          <ConnectWalletButton />
         </div>
       </div>
     </header>
