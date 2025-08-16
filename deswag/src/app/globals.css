@@ -10,6 +10,13 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --brand-300: #D8B4FE;
+  --brand-500: #A78BFA;
+  --brand-600: #8B5CF6;
+  --ink: #2D2D2D;
+  --muted: #6B7280;
+  --card-bg: color-mix(in oklab, white 80%, transparent);
+  --card-border: color-mix(in oklab, #94A3B8 35%, transparent);
 }
 
 @media (prefers-color-scheme: dark) {

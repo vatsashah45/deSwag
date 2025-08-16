@@ -1,16 +1,20 @@
 "use client";
-import ConnectWalletButton from "@/components/ConnectWalletButton";
-import TabNav from "@/components/TabNav";
-
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-slate-200">
-      <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2 font-semibold text-lg">
-          <span className="inline-flex h-6 w-6 rounded-md bg-black text-white items-center justify-center">⚡</span>
-          <span>NFC Marketplace</span>
+    <header className="sticky top-0 z-30">
+      <div className="bg-white/70 backdrop-blur border-b border-[var(--card-border)]">
+        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--ink)] text-white text-sm">⚡</span>
+            <div className="leading-tight">
+              <div className="font-semibold text-[var(--ink)]">deSwag</div>
+              <div className="text-[11px] text-[var(--muted)] -mt-0.5">NFC Swag Marketplace</div>
+            </div>
+          </div>
+          <button className="inline-flex h-10 px-5 items-center justify-center rounded-xl font-medium text-white shadow-sm hover:shadow-md active:scale-[.98] transition bg-gradient-to-r from-[var(--brand-500)] to-[var(--brand-600)]">
+            Connect Wallet
+          </button>
         </div>
-        <ConnectWalletButton />
       </div>
     </header>
   );
