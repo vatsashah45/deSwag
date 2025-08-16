@@ -11,6 +11,7 @@ const { data, error } = await supabase
     created_at,
     eth_price,
     seller,
+    image_url, 
     user_items!item_forsale_user_item_id_fkey (
       id,
       item_id,
@@ -34,7 +35,7 @@ const { data, error } = await supabase
       userItemId: row.user_items?.id as number,
       swagId: row.user_items?.items_swag?.id as number,
       name: row.user_items?.items_swag?.name as string,
-      image_url: row.user_items?.items_swag?.image_url as string,
+      image_url: row.image_url as string, // 👈 top-level colum
       companyId: row.user_items?.items_swag?.company_id as string | number | null,
     }));
   }
