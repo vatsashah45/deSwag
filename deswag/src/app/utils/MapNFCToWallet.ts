@@ -4,12 +4,12 @@ const supabase = createClient();
 
 
 //once <connect nfc to wallet address> is clicked, it saves to db
-export async function saveWalletNfc(wallet_address: string, nfc_code: string) {
+export async function saveWalletNfc(wallet_address: string, nfc_hash: string) {
   const supabase = createClient();
 
   const { data, error } = await supabase
     .from("kvps")
-    .insert([{ wallet_address, nfc_code }])
+    .insert([{ wallet_address, nfc_hash }])
     .select();
 
   if (error) {
@@ -20,13 +20,13 @@ export async function saveWalletNfc(wallet_address: string, nfc_code: string) {
   return data;
 }
 
-export async function getWalletByNfc(nfc_code: string) {
+export async function getWalletByNfc(nfc_hash: string) {
   const supabase = createClient();
 
   const { data, error } = await supabase
     .from("kvps")
     .select("wallet_address")
-    .eq("nfc_hash", nfc_code)
+    .eq("nfc_hash", nfc_hash)
     .single();
 
   if (error) {
