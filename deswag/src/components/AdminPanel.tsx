@@ -190,7 +190,7 @@ export default function AdminPanel() {
                 <h3 className="text-lg font-semibold mb-6">Scan to Claim</h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium">NFC Code</label>
+                    <label className="block text-sm font-medium mb-4">NFC Code (simply paste NFC link received at the top)</label>
                     <input
                       value={scannedNfc}
                       onChange={(e) => setScannedNfc(e.target.value.toUpperCase())}
