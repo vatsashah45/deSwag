@@ -42,10 +42,44 @@ export async function getActiveListings() {
 /** Items the current user owns (for Sell page). 
  *  If an owned item is already listed, `listed=true`.
  */
-export async function getOwnedItems(walletOrUserId: string) {
+type OwnedItem = {
+  userItemId: number;
+  swagId: number | null;
+  name: string | null;
+  image: string | null;
+  company: string | null;
+  listed: boolean;
+};
+
+/**
+ * Pass either:
+ *  - walletOrUserId = "0x..." (wallet address)  -> we resolve kvps.id first
+ *  - walletOrUserId = "<number>" (kvps.id as string) -> used directly
+ */
+export async function getOwnedItems(walletOrUserId: string): Promise<OwnedItem[]> {
   const supabase = createClient();
 
-  // All owned instances
+  // Resolve user_id (kvps.id)
+  let userId: number | null = null;
+
+  if (/^0x[0-9a-fA-F]{40}$/.test(walletOrUserId)) {
+    // Look up kvps by wallet address
+    const { data: kvp, error: e0 } = await supabase
+      .from("kvps")
+      .select("id")
+      .eq("wallet_address", walletOrUserId)
+      .maybeSingle();
+    if (e0) throw e0;
+    if (!kvp?.id) return []; // no link yet
+    userId = kvp.id as number;
+  } else {
+    const n = Number(walletOrUserId);
+    if (Number.isFinite(n)) userId = n;
+  }
+
+  if (userId == null) return [];
+
+  // All owned instances (join to items_swag)
   const { data: owned, error: e1 } = await supabase
     .from("user_items")
     .select(`
@@ -53,37 +87,39 @@ export async function getOwnedItems(walletOrUserId: string) {
       item_id,
       created_at,
       items_swag (
-        id, name, image_url, company_id
+        id,
+        name,
+        image,
+        company
       )
     `)
-    .eq("user_id", walletOrUserId);
+    .eq("user_id", userId);
+
   if (e1) throw e1;
 
   const userItemIds = (owned ?? []).map((o) => o.id);
-  if (userItemIds.length === 0) {
-    return [];
-  }
+  if (userItemIds.length === 0) return [];
 
-  // Which of those are already listed & unsold
+  // Which of those are already listed & unsold (buyer is null)
   const { data: active, error: e2 } = await supabase
     .from("item_forsale")
     .select("foreign_id")
     .in("foreign_id", userItemIds)
     .is("buyer", null);
+
   if (e2) throw e2;
 
   const listedSet = new Set((active ?? []).map((r: any) => r.foreign_id));
 
   return (owned ?? []).map((o: any) => ({
     userItemId: o.id as number,
-    swagId: o.items_swag?.id as number,
-    name: o.items_swag?.name as string,
-    image: o.items_swag?.image_url as string,
-    companyId: o.items_swag?.company_id as string | number | null,
+    swagId: o.items_swag?.id ?? null,
+    name: o.items_swag?.name ?? null,
+    image: o.items_swag?.image ?? null,
+    company: o.items_swag?.company ?? null,
     listed: listedSet.has(o.id),
   }));
 }
-
 /** Create a new listing for a specific owned item instance */
 export async function createListing(opts: {
   userItemId: number;
