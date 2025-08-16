@@ -7,6 +7,8 @@ import GetStartedForm from "@/components/GetStartedForm";
 import MarketplaceBuy from "@/components/MarketplaceBuy";
 import MarketplaceSell from "@/components/MarketplaceSell";
 import AdminPanel from "@/components/AdminPanel";
+import Providers from "@/components/CDP/Providers";
+
 
 export type TabKey = "get-started" | "buy" | "sell" | "admin";
 
@@ -14,7 +16,7 @@ export default function Home() {
   const [tab, setTab] = useState<TabKey>("get-started");
 
   return (
-    <>
+    <Providers>
       <Navbar />
 
       <main className="mx-auto max-w-7xl px-4 pb-20">
@@ -74,6 +76,6 @@ export default function Home() {
           {tab === "admin" && <AdminPanel />}
         </section>
       </main>
-    </>
+    </Providers>
   );
 }

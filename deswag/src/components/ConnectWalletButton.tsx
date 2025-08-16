@@ -1,9 +1,10 @@
 "use client";
+import { AuthButton } from "@coinbase/cdp-react/components/AuthButton";
 
 export default function ConnectWalletButton() {
   return (
     <button className="btn btn-primary">
-      <span className="text-sm md:text-base">Connect Wallet</span>
+      <AuthButton></AuthButton>
     </button>
   );
 }
