@@ -9,22 +9,25 @@ import { fetchBlob } from "@/app/utils/uploadFileToWalrus";
 type ListingUI = Awaited<ReturnType<typeof getActiveListings>>[number];
 
 export default function MarketplaceBuy() {
-  const [items, setItems] = useState<ListingUI[]>([]);
+  const [items, setItems] = useState<(ListingUI & { imageUrl?: string })[]>([]);
   const [loading, setLoading] = useState(true);
   const { evmAddress } = useEvmAddress();
 
   useEffect(() => {
+    let active = true;
+    const objectUrls: string[] = [];
+
     (async () => {
       try {
         const rows = await getActiveListings();
-        setItems(rows);
-          const withImages = await Promise.all(
+
+        const withImages = await Promise.all(
           rows.map(async (row) => {
             if (row.image_url) {
               try {
-                const blob = await fetchBlob(row.image_url); // fetch Walrus blob
+                const blob = await fetchBlob(row.image_url); // Walrus blob
                 const url = URL.createObjectURL(blob);
-                //objectUrls.push(url);
+                objectUrls.push(url);
                 return { ...row, imageUrl: url };
               } catch (err) {
                 console.error("Failed to fetch blob", err);
@@ -33,10 +36,18 @@ export default function MarketplaceBuy() {
             return row;
           })
         );
+
+        if (active) setItems(withImages);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     })();
+
+    return () => {
+      active = false;
+      // cleanup all blob URLs
+      objectUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
   }, []);
 
   const buy = async (id: number) => {
@@ -44,12 +55,10 @@ export default function MarketplaceBuy() {
     try {
       await purchaseListing({ listingId: id, buyer: evmAddress });
       setItems((prev) => prev.filter((p) => p.id !== id));
-      //alert("Purchased (DB recorded). On-chain transfer later.");
     } catch (e: any) {
       alert(e?.message ?? "Failed to purchase");
     }
   };
-  
 
   if (loading) return <div className="text-[var(--muted)]">Loading listings…</div>;
   if (!items.length) return <div className="text-[var(--muted)]">No listings yet.</div>;
@@ -59,7 +68,7 @@ export default function MarketplaceBuy() {
       {items.map((i) => (
         <div key={i.id} className="group">
           <ProductCard
-            image={i.image}
+            image={i.imageUrl ?? "/placeholder.png"} // ✅ use blob URL
             title={i.name}
             subtitle={i.companyId ? `Company #${i.companyId}` : "Community"}
             price={`${i.priceEth.toFixed(2)} ETH`}
@@ -71,16 +80,15 @@ export default function MarketplaceBuy() {
               onClick={() => buy(i.id)}
               className="w-full h-10 rounded-xl font-medium text-white shadow-sm hover:shadow-md active:scale-[.98] transition bg-gradient-to-r from-[var(--brand-500)] to-[var(--brand-600)] items-center justify-center flex"
             >
-            <Purchase
-              id={i.id}                       // row id in item_forsale
-              itemId={i.itemId ?? i.foreign_id} // swag item id
-              to={i.seller}                   // seller wallet
-              value={BigInt(Math.floor(i.priceEth))} // convert to bigint (ETH amount)
-              onSuccess={(id) => {
-                // ✅ remove from list after purchase
-                setItems((prev) => prev.filter((x) => x.id !== id));
-              }}
-            />
+              <Purchase
+                id={i.id}                         // row id in item_forsale
+                itemId={i.itemId ?? i.foreign_id} // swag item id
+                to={i.seller}                     // seller wallet
+                value={BigInt(Math.floor(i.priceEth))}
+                onSuccess={(id) => {
+                  setItems((prev) => prev.filter((x) => x.id !== id));
+                }}
+              />
             </div>
           </div>
         </div>
