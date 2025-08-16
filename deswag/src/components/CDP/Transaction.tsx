@@ -1,8 +1,8 @@
 "use client";
 import { useSendEvmTransaction, useEvmAddress } from "@coinbase/cdp-hooks";
-import { Button } from "@coinbase/cdp-react/components/Button";
-import { LoadingSkeleton } from "@coinbase/cdp-react/components/LoadingSkeleton";
 import { type MouseEvent, useCallback, useMemo, useState } from "react";
+
+const WEI_PER_ETH = 10n ** 18n;
 
 interface Props {
   balance?: string;
@@ -16,7 +16,7 @@ export default function Transaction(props: Props) {
   const { sendEvmTransaction } = useSendEvmTransaction();
   const { evmAddress } = useEvmAddress();
 
-  const [isPending, setIsPending] = useState(false);
+  const [ispending, setIsPending] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
 
   const handleSendTransaction = useCallback(
@@ -29,7 +29,7 @@ export default function Transaction(props: Props) {
       const { transactionHash } = await sendEvmTransaction({
         transaction: {
           to: (props.to ?? evmAddress) as `0x${string}`, 
-          value: props.value,       // 0.000001 ETH in wei
+          value: props?.value * WEI_PER_ETH,       // custom amount in eth
           gas: 21000n,                 // Standard ETH transfer gas limit
           chainId: 84532,              // Base Sepolia testnet
           type: "eip1559",             // Modern transaction type
@@ -47,8 +47,8 @@ export default function Transaction(props: Props) {
 
   // Component renders transaction button or success state
   return (
-    <Button onClick={handleSendTransaction} isPending={isPending}>
-      Send Transaction
-    </Button>
+    <button onClick={handleSendTransaction}>
+      Purchase item
+    </button>
   );
 }
