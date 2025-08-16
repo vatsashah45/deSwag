@@ -1,17 +1,41 @@
 "use client";
 import { useState } from "react";
+import { useCurrentUser, useEvmAddress } from "@coinbase/cdp-hooks";
+import { saveWalletNfc } from "@/app/utils/MapNFCToWallet";
 
 export default function GetStartedForm() {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
+    const { currentUser } = useCurrentUser();
+  const { evmAddress } = useEvmAddress();
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMsg(null);
-    if (!/^[A-Z0-9]{8}$/i.test(code)) { setMsg("Please enter a valid 8-character NFC code."); return; }
+
+    // validate code
+    if (!/^[A-Z0-9]{8}$/i.test(code)) {
+      setMsg("Please enter a valid 8-character NFC code.");
+      return;
+    }
+
+    // require connected wallet (but don't change UI)
+    if (!currentUser || !evmAddress) {
+      setMsg("Please connect your wallet first.");
+      return;
+    }
+
     setLoading(true);
-    try { setMsg("Success! Your wallet is ready to connect."); } catch { setMsg("Could not set up wallet. Try again."); } finally { setLoading(false); }
+    try {
+      await saveWalletNfc(evmAddress, code.toUpperCase());
+      setMsg("Success! Your NFC code is now linked to your wallet.");
+    } catch (err: any) {
+      setMsg(err?.message ?? "Could not set up wallet. Try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

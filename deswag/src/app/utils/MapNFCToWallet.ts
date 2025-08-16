@@ -51,6 +51,6 @@ export async function getNfcByWallet(wallet_address: string) {
     throw error;
   }
 
-  return data?.nfc_code;
+  return data?.nfc_hash;
 }
 
