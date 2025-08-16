@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@coinbase/cdp-core": "^0.0.20",
+    "@coinbase/cdp-hooks": "^0.0.20",
+    "@coinbase/cdp-react": "^0.0.20",
     "next": "15.4.6",
     "react": "19.1.0",
     "react-dom": "19.1.0"
