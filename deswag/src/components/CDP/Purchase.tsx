@@ -11,7 +11,7 @@ interface Props {
   value?: bigint;  
 }
 
-export default function Transaction(props: Props) {
+export default function Purchase(props: Props) {
   const { balance, onSuccess } = props;
   const { sendEvmTransaction } = useSendEvmTransaction();
   const { evmAddress } = useEvmAddress();

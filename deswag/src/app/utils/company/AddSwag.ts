@@ -8,7 +8,7 @@ export async function addCompanySwag(company_id: string, item_id: string, price:
   const supabase = createClient();
 
   const { data, error } = await supabase
-    .from("company_swag")
+    .from("items_swag")
     .insert([{ company_id, item_id, price }])
     .select();
 
@@ -27,7 +27,7 @@ export async function upsertCompanySwag(company_id: string, item_id: string, pri
   const supabase = createClient();
 
   const { data, error } = await supabase
-    .from("company_swag")
+    .from("items_swag")
     .upsert({ company_id, item_id, price }, { onConflict: "company_id,item_id" })
     .select();
 
@@ -46,7 +46,7 @@ export async function getCompanySwag(company_id: string) {
   const supabase = createClient();
 
   const { data, error } = await supabase
-    .from("company_swag")
+    .from("items_swag")
     .select("id, company_id, item_id, price, created_at")
     .eq("company_id", company_id);
 
@@ -65,7 +65,7 @@ export async function getCompanySwagByItem(company_id: string, item_id: string) 
   const supabase = createClient();
 
   const { data, error } = await supabase
-    .from("company_swag")
+    .from("items_swag")
     .select("id, company_id, item_id, price, created_at")
     .eq("company_id", company_id)
     .eq("item_id", item_id)
@@ -86,7 +86,7 @@ export async function deleteCompanySwag(company_id: string, item_id: string) {
   const supabase = createClient();
 
   const { data, error } = await supabase
-    .from("company_swag")
+    .from("items_swag")
     .delete()
     .eq("company_id", company_id)
     .eq("item_id", item_id)

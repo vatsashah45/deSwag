@@ -21,6 +21,23 @@ export async function createItemForSale(item_id: string, price: number) {
   return data;
 }
 
+export async function removeItemForSale(item_id: string) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("item_forsale")
+    .delete()
+    .eq("item_id", item_id)
+    .select();
+
+  if (error) {
+    console.error("Error removing item for sale:", error);
+    throw error;
+  }
+
+  return data;
+}
+
 /**
  * Fetch all items for sale.
  */
@@ -30,6 +47,8 @@ export async function getItemsForSale() {
   const { data, error } = await supabase
     .from("item_forsale")
     .select("id, price, item_id, created_at");
+
+    console.log(data)
 
   if (error) {
     console.error("Error fetching items for sale:", error);

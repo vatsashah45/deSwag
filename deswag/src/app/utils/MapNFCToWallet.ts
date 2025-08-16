@@ -2,6 +2,8 @@ import { createClient } from "./CreateSupabaseClient";
 
 const supabase = createClient();
 
+
+//once <connect nfc to wallet address> is clicked, it saves to db
 export async function saveWalletNfc(wallet_address: string, nfc_code: string) {
   const supabase = createClient();
 
