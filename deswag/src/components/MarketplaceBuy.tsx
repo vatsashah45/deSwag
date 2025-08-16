@@ -4,6 +4,7 @@ import ProductCard from "@/components/ProductCard";
 import { getActiveListings, purchaseListing } from "@/app/utils/Marketplace";
 import { useEvmAddress } from "@coinbase/cdp-hooks";
 import Purchase from "./CDP/Purchase";
+import { fetchBlob } from "@/app/utils/uploadFileToWalrus";
 
 type ListingUI = Awaited<ReturnType<typeof getActiveListings>>[number];
 
@@ -17,6 +18,21 @@ export default function MarketplaceBuy() {
       try {
         const rows = await getActiveListings();
         setItems(rows);
+          const withImages = await Promise.all(
+          rows.map(async (row) => {
+            if (row.image_url) {
+              try {
+                const blob = await fetchBlob(row.image_url); // fetch Walrus blob
+                const url = URL.createObjectURL(blob);
+                //objectUrls.push(url);
+                return { ...row, imageUrl: url };
+              } catch (err) {
+                console.error("Failed to fetch blob", err);
+              }
+            }
+            return row;
+          })
+        );
       } finally {
         setLoading(false);
       }
@@ -33,6 +49,7 @@ export default function MarketplaceBuy() {
       alert(e?.message ?? "Failed to purchase");
     }
   };
+  
 
   if (loading) return <div className="text-[var(--muted)]">Loading listings…</div>;
   if (!items.length) return <div className="text-[var(--muted)]">No listings yet.</div>;

@@ -8,10 +8,10 @@ export async function addCompanySwag(
   company_id: string,
   name: string,
   quantity: number,
-  image?: string
+  image_url?: string
 ) {
   const supabase = createClient();
-  const row = { company_id, name, quantity, ...(image ? { image } : {}) };
+  const row = { company_id, name, quantity, ...(image_url ? { image_url } : {}) };
 
   const { data, error } = await supabase
     .from("items_swag")

@@ -5,6 +5,8 @@ import { createClient as createBrowserClient } from "@supabase/supabase-js";
 import { addCompanySwag, getCompanySwag } from "@/app/utils/company/AddSwag";
 import { addUserItem, userOwnsItem } from "@/app/utils/company/TrackClaims";
 
+import { uploadBlob } from "@/app/utils/uploadFileToWalrus";
+
 const supabaseBrowser = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -23,6 +25,7 @@ export default function AdminPanel() {
   const [mode, setMode] = useState<"private" | "public">("private");
   const [name, setName] = useState("");
   const [cap, setCap] = useState("");
+  const [imageUrl, setImageurl] = useState<string | File>("")
 
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -62,7 +65,11 @@ export default function AdminPanel() {
 
     try {
       setLoading(true);
-      await addCompanySwag(COMPANY_ID, name.trim(), capNum); // image optional 4th arg
+
+      const receivedBlob = await uploadBlob(imageUrl);
+      console.log(receivedBlob)
+
+      await addCompanySwag(COMPANY_ID, name.trim(), capNum, receivedBlob.newlyCreated?.blobObject?.blobId); // image optional 4th arg
       const rows = await getCompanySwag(COMPANY_ID);
       setCompanyItems((rows as CompanyItem[]) || []);
       setName(""); setCap("");
@@ -178,6 +185,21 @@ export default function AdminPanel() {
                       onChange={(e) => SETCOMPANY_ID(e.target.value)}
                       className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-200"
                       placeholder="VIP Access Pass"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Image</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setImageurl(file)
+                          // later: upload to Supabase Storage, store the public URL
+                        }
+                      }}
+                      className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-200"
                     />
                   </div>
                   <button disabled={loading} className="btn-primary w-full h-11 rounded-xl">
