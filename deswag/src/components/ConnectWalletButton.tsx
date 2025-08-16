@@ -1,12 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useCurrentUser } from "@coinbase/cdp-hooks";
+import { useCurrentUser, useSignOut } from "@coinbase/cdp-hooks";
 import { AuthButton } from "@coinbase/cdp-react/components/AuthButton";
 import UserProfile from "./CDP/UserProfile";
 
 export default function WalletStatus() {
   const { currentUser } = useCurrentUser();
+  const { signOut } = useSignOut();
   const [opened, setOpened] = useState(false);
 
   // We'll mount the real AuthButton invisibly and click it programmatically
@@ -52,20 +53,36 @@ export default function WalletStatus() {
     <>
       {opened ? <UserProfile /> : null}
 
-      <button
-        onClick={() => setOpened((s) => !s)}
-        title={addr}
-        className="
-          px-3 py-1.5 rounded-full
-          bg-white/70 backdrop-blur
-          border border-[var(--card-border)]
-          text-[var(--ink)] font-medium
-          hover:bg-white transition
-          max-w-40 truncate
-        "
-      >
-        {short}
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setOpened((s) => !s)}
+          title={addr}
+          className="
+            px-3 py-1.5 rounded-full
+            bg-white/70 backdrop-blur
+            border border-[var(--card-border)]
+            text-[var(--ink)] font-medium
+            hover:bg-white transition
+            max-w-40 truncate
+          "
+        >
+          {short}
+        </button>
+
+        <button
+          onClick={async () => {
+            await signOut();     // clear CDP session
+            setOpened(false);
+          }}
+          className="
+            px-3 py-1.5 rounded-full
+            bg-red-500 text-white
+            hover:bg-red-600 transition
+          "
+        >
+          Logout
+        </button>
+      </div>
     </>
   );
 }
