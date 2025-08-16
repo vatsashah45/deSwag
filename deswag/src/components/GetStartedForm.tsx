@@ -31,13 +31,10 @@ export default function GetStartedForm() {
       if (cancelled) return;
       if (existing) {
         setLinkedCode(existing);
-        // Optionally redirect instead of showing the "all set" card
         // router.replace("/");
       }
     })();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [evmAddress, router]);
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -67,14 +64,14 @@ export default function GetStartedForm() {
 
   if (linkedCode) {
     return (
-      <div className="w-full max-w-xl bg-[var(--card-bg)] backdrop-blur-xl rounded-2xl shadow-sm border border-[var(--card-border)]">
+      <div className="w-full max-w-xl card card-hover">
         <div className="p-6 md:p-8">
           <div className="flex items-center gap-2 mb-2">
             <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-[var(--brand-600)] text-white">✅</span>
-            <h2 className="text-lg font-semibold text-[var(--ink)]">You’re all set</h2>
+            <h2 className="text-lg font-semibold text-[var(--ink-strong)]">You’re all set</h2>
           </div>
-          <p className="text-sm text-[var(--muted)] mb-6">
-            Your wallet is already linked to NFC code <b>{linkedCode}</b>.
+          <p className="text-sm subtle mb-2">
+            Your wallet is already linked to NFC code <b className="text-[var(--ink-strong)]">{linkedCode}</b>.
           </p>
         </div>
       </div>
@@ -82,22 +79,22 @@ export default function GetStartedForm() {
   }
 
   return (
-    <div className="w-full max-w-xl bg-[var(--card-bg)] backdrop-blur-xl rounded-2xl shadow-sm border border-[var(--card-border)]">
+    <div className="w-full max-w-xl card card-hover">
       <div className="p-6 md:p-8">
         <div className="flex items-center gap-2 mb-2">
           <span className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-[var(--brand-600)] text-white">⚡</span>
-          <h2 className="text-lg font-semibold text-[var(--ink)]">NFC Wallet Setup</h2>
+          <h2 className="text-lg font-semibold text-[var(--ink-strong)]">NFC Wallet Setup</h2>
         </div>
-        <p className="text-sm text-[var(--muted)] mb-6">Scan or enter your NFC code to get started</p>
+        <p className="text-sm subtle mb-6">Scan or enter your NFC code to get started</p>
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[var(--ink)]">NFC Code</label>
+            <label className="block text-sm font-medium text-[var(--ink-strong)]">NFC Code</label>
             <input
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               placeholder="Enter your 8-character NFC code"
-              className="w-full rounded-xl border px-4 py-3 outline-none border-[var(--card-border)] bg-white/70 focus:ring-2 focus:ring-[var(--brand-300)]"
+              className="w-full rounded-xl border px-4 py-3 outline-none border-[var(--border)] bg-white/80 focus:ring-2 focus:ring-[var(--brand-300)]"
             />
           </div>
 
@@ -116,7 +113,7 @@ export default function GetStartedForm() {
               <button
                 type="button"
                 onClick={openAuth}
-                className="w-full h-11 rounded-xl font-medium text-white shadow-sm hover:shadow-md active:scale-[.98] transition bg-gradient-to-r from-[var(--brand-500)] to-[var(--brand-600)]"
+                className="btn btn-primary w-full"
               >
                 Sign in
               </button>
@@ -125,17 +122,17 @@ export default function GetStartedForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-11 rounded-xl font-medium text-white shadow-sm hover:shadow-md active:scale-[.98] transition bg-gradient-to-r from-[var(--brand-500)] to-[var(--brand-600)] disabled:opacity-70"
+              className="btn btn-primary w-full disabled:opacity-70"
             >
               {loading ? "Linking..." : "Link NFC to Wallet"}
             </button>
           )}
 
-          {msg && <div className="text-center text-sm pt-1 text-[var(--ink)]">{msg}</div>}
+          {msg && <div className="text-center text-sm pt-1 text-[var(--ink-strong)]">{msg}</div>}
         </form>
 
-        <div className="text-center text-sm text-[var(--muted)] mt-6">
-          Don’t have an NFC code? <span className="font-medium text-[var(--ink)]">Request one from event organizers</span>
+        <div className="text-center text-sm subtle mt-6">
+          Don’t have an NFC code? <span className="font-medium text-[var(--ink-strong)]">Request one from event organizers</span>
         </div>
       </div>
     </div>

@@ -15,21 +15,20 @@ export default function Home() {
   const [tab, setTab] = useState<TabKey>("get-started");
 
   return (
-    <div className="bg-app">
-      <Providers>
+    <Providers>
       <Navbar />
 
-      <main className="mx-auto max-w-7xl px-4 pb-20">
+      <main className="container-app pb-20">
         <section className="mt-8"><TabNav tab={tab} onChange={setTab} /></section>
 
         <section className="text-center mt-10 md:mt-12">
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight">
+          <h1 className="heading text-3xl md:text-5xl font-extrabold">
             {tab === "get-started" && "Get Started"}
             {tab === "buy" && "Marketplace — Buy"}
             {tab === "sell" && "Marketplace — Sell"}
             {tab === "admin" && "Admin Dashboard"}
           </h1>
-          <p className="mt-3 text-slate-600 max-w-2xl mx-auto">
+          <p className="mt-3 subtle max-w-2xl mx-auto">
             {tab === "get-started" && "Enter your NFC code to connect or create your wallet"}
             {tab === "buy" && "Discover and purchase exclusive event items"}
             {tab === "sell" && "List your swag NFTs with one click"}
@@ -44,7 +43,6 @@ export default function Home() {
           {tab === "admin" && <AdminPanel />}
         </section>
       </main>
-      </Providers>
-    </div>
+    </Providers>
   );
 }

@@ -1,33 +1,136 @@
 @import "tailwindcss";
 
+/* === Theme tokens (light) === */
 :root {
-  --background: linear-gradient(to bottom right, #FDFBFF, #F3EEFF, #E8F0FE);
-  --foreground: #2D2D2D;
-}
+  /* Background gradient */
+  --background: linear-gradient(180deg, #FDFBFF 0%, #F3EEFF 45%, #E8F0FE 100%);
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Ink (text) */
+  --ink-strong: #1f2937;
+  /* slate-800 */
+  --ink: #2d2d2d;
+  /* your original */
+  --ink-soft: #6b7280;
+  /* slate-500/600 */
+
+  /* Brand (pastel violet) */
   --brand-300: #D8B4FE;
   --brand-500: #A78BFA;
   --brand-600: #8B5CF6;
-  --ink: #2D2D2D;
-  --muted: #6B7280;
-  --card-bg: color-mix(in oklab, white 80%, transparent);
-  --card-border: color-mix(in oklab, #94A3B8 35%, transparent);
+
+  /* Surfaces on top of gradient */
+  --surface: color-mix(in oklab, #ffffff 82%, transparent);
+  --surface-2: color-mix(in oklab, #ffffff 92%, transparent);
+  --border: color-mix(in oklab, #94A3B8 45%, transparent);
+  /* slate-400 w/ alpha */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 10px 20px rgba(15, 23, 42, 0.08);
+
+  /* Text smoothing */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
+/* === Theme tokens (dark) — keep it soft/pastel too === */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: linear-gradient(to bottom right, #C6E7FF, #FFCCEA, #CB9DF0);
-    --foreground: #F1F1F1;
+    --background: linear-gradient(180deg, #C6E7FF 0%, #FFCCEA 45%, #CB9DF0 100%);
+    --ink-strong: #2D2D2D;
+    --ink: #2D2D2D;
+    --ink-soft: #2D2D2D;
+    --surface: color-mix(in oklab, #0b1220 45%, transparent);
+    --surface-2: color-mix(in oklab, #0b1220 65%, transparent);
+    --border: color-mix(in oklab, #93c5fd 30%, transparent);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 12px 24px rgba(0, 0, 0, 0.35);
   }
+}
+
+html,
+body {
+  height: 100%;
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-sans), ui-sans-serif, system-ui;
+}
+
+.container-app {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-hover {
+  transition: transform .15s ease, box-shadow .2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  height: 2.75rem;
+  padding-inline: 1rem;
+  border-radius: .75rem;
+  font-weight: 600;
+}
+
+.btn-primary {
+  color: #fff;
+  background: linear-gradient(90deg, var(--brand-500), var(--brand-600));
+  border: 1px solid rgba(255, 255, 255, .45);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--ink-strong);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: .25rem .625rem;
+  border-radius: 999px;
+  font-size: .75rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--ink-strong);
+}
+
+.heading {
+  color: var(--ink-strong);
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .6);
+}
+
+.subtle {
+  color: var(--ink-soft);
 }
