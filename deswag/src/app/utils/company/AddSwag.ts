@@ -5,18 +5,18 @@ import { createClient } from "../CreateSupabaseClient";
  * If you want to UPDATE price on duplicate pair, use the upsert version below.
  */
 export async function addCompanySwag(
-  company: string,
+  company_id: string,
   name: string,
   quantity: number,
   image?: string
 ) {
   const supabase = createClient();
-  const row = { company, name, quantity, ...(image ? { image } : {}) };
+  const row = { company_id, name, quantity, ...(image ? { image } : {}) };
 
   const { data, error } = await supabase
     .from("items_swag")
     .insert([row])
-    .select("id, company, name, quantity, image, created_at")
+    .select("id, company_id, name, quantity, image_url, created_at")
     .single();
 
   if (error) {
@@ -32,8 +32,8 @@ export async function getCompanySwag(company: string) {
 
   const { data, error } = await supabase
     .from("items_swag")
-    .select("id, company, name, quantity, image, created_at")
-    .eq("company", company)
+    .select("id, company_id, name, quantity, image_url, created_at")
+    .eq("company_id", company)
     .order("created_at", { ascending: false });
 
   if (error) {

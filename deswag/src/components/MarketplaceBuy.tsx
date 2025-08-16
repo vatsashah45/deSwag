@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import { getActiveListings, purchaseListing } from "@/app/utils/Marketplace";
 import { useEvmAddress } from "@coinbase/cdp-hooks";
+import Purchase from "./CDP/Purchase";
 
 type ListingUI = Awaited<ReturnType<typeof getActiveListings>>[number];
 
@@ -44,7 +45,7 @@ export default function MarketplaceBuy() {
             image={i.image}
             title={i.name}
             subtitle={i.companyId ? `Company #${i.companyId}` : "Community"}
-            price={`${i.priceEth.toFixed(2)} ETH`}
+            price={`${i.priceEth.toFixed(6)} ETH`}
             vendor={i.seller.slice(0, 6) + "…" + i.seller.slice(-4)}
             badge="For sale"
           />
@@ -55,6 +56,7 @@ export default function MarketplaceBuy() {
             >
               Buy
             </button>
+            <Purchase></Purchase>
           </div>
         </div>
       ))}

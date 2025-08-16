@@ -10,11 +10,9 @@ const supabaseBrowser = createBrowserClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-const COMPANY_ID = process.env.NEXT_PUBLIC_COMPANY_ID ?? "Coinbase";
-
 type CompanyItem = {
   id: string | number;
-  company: string;
+  company_id: string;
   name: string;
   quantity: number;
   image?: string | null;
@@ -30,6 +28,11 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
 
   const [companyItems, setCompanyItems] = useState<CompanyItem[]>([]);
+
+  const [loadingById, setLoadingById] = useState<Record<number, boolean>>({});
+  const [toastById, setToastById] = useState<Record<number, string | null>>({});
+
+  const [COMPANY_ID, SETCOMPANY_ID] = useState("Coinbase");
 
   // TODO: replace with your real admin gate
   const isAdmin = useMemo(() => true, []);
@@ -74,12 +77,15 @@ export default function AdminPanel() {
   // PUBLIC: claim by scanned NFC code
   const [scannedNfc, setScannedNfc] = useState<string>("");
 
-  const claimItemForScan = async (itemId: string | number) => {
-    setToast(null);
+  const claimItemForScan = async (itemId: number) => {
     const code = scannedNfc.trim().toUpperCase();
 
+    // reset toast only for this item
+    setToastById((prev) => ({ ...prev, [itemId]: null }));
+
     try {
-      setLoading(true);
+      setLoadingById((prev) => ({ ...prev, [itemId]: true }));
+
       // 1) find kvps.id (user_id) by nfc_hash
       const { data: kvp, error: kvpErr } = await supabaseBrowser
         .from("kvps")
@@ -87,20 +93,34 @@ export default function AdminPanel() {
         .eq("nfc_hash", code)
         .maybeSingle();
       if (kvpErr) throw kvpErr;
-      if (!kvp?.id) { setToast("No wallet linked to this NFC"); return; }
+      if (!kvp?.id) {
+        setToastById((prev) => ({ ...prev, [itemId]: "No wallet linked to this NFC" }));
+        return;
+      }
       const userId = String(kvp.id);
 
       // 2) own-check
       const owned = await userOwnsItem(userId, String(itemId));
-      if (owned) { setToast("User already owns this item"); return; }
+      if (owned) {
+        setToastById((prev) => ({ ...prev, [itemId]: "User already owns this item" }));
+        return;
+      }
 
-      // 3) grant
+      // 3) grant item
       await addUserItem(userId, String(itemId));
-      setToast("✅ Claimed");
+
+      // 4) decrement quantity atomically
+      //TODO: find out how i can decrement
+      const { error } = await supabaseBrowser.rpc("decrement_item_quantity", {
+        target_id: itemId,
+      });
+      if (error) throw error;
+
+      setToastById((prev) => ({ ...prev, [itemId]: "✅ Claimed" }));
     } catch (e: any) {
-      setToast(e?.message ?? "Claim failed");
+      setToastById((prev) => ({ ...prev, [itemId]: e?.message ?? "Claim failed" }));
     } finally {
-      setLoading(false);
+      setLoadingById((prev) => ({ ...prev, [itemId]: false }));
     }
   };
 
@@ -149,6 +169,15 @@ export default function AdminPanel() {
                       onChange={(e) => setCap(e.target.value)}
                       className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-200"
                       placeholder="50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium">Company</label>
+                    <input
+                      value={COMPANY_ID}
+                      onChange={(e) => SETCOMPANY_ID(e.target.value)}
+                      className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-200"
+                      placeholder="VIP Access Pass"
                     />
                   </div>
                   <button disabled={loading} className="btn-primary w-full h-11 rounded-xl">
@@ -209,26 +238,29 @@ export default function AdminPanel() {
                 {companyItems.length === 0 ? (
                   <div className="text-sm text-slate-500">No items yet.</div>
                 ) : (
-                  companyItems.map((row) => (
-                    <div
-                      key={row.id}
-                      className="flex items-center justify-between rounded-xl border border-slate-200 p-4"
-                    >
-                      <div>
-                        <div className="font-medium">{row.name}</div>
-                        <div className="text-xs text-slate-500">
-                          Quantity: {row.quantity}
-                        </div>
-                      </div>
-                      <button
-                        disabled={loading || !scannedNfc}
-                        onClick={() => claimItemForScan(row.id)}
-                        className="px-4 py-2 rounded-lg bg-green-600 text-white disabled:opacity-60"
-                      >
-                        {loading ? "Claiming…" : "Claim"}
-                      </button>
-                    </div>
-                  ))
+                      companyItems.map((row) => (
+        <div
+          key={row.id}
+          className="flex items-center justify-between rounded-xl border border-slate-200 p-4"
+        >
+          <div>
+            <div className="font-medium">{row.name}</div>
+            <div className="text-xs text-slate-500">
+              Quantity: {row.quantity}
+            </div>
+            {toastById[row.id] && (
+              <div className="text-xs mt-1 text-green-600">{toastById[row.id]}</div>
+            )}
+          </div>
+          <button
+            disabled={loadingById[row.id] || !scannedNfc}
+            onClick={() => claimItemForScan(row.id)}
+            className="px-4 py-2 rounded-lg bg-green-600 text-white disabled:opacity-60"
+          >
+            {loadingById[row.id] ? "Claiming…" : "Claim"}
+          </button>
+        </div>
+      ))
                 )}
               </div>
             )}

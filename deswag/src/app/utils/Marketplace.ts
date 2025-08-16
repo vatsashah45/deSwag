@@ -34,7 +34,7 @@ export async function getActiveListings() {
     userItemId: row.user_items?.id as number,
     swagId: row.user_items?.items_swag?.id as number,
     name: row.user_items?.items_swag?.name as string,
-    image: row.user_items?.items_swag?.image_url as string,
+    image_url: row.user_items?.items_swag?.image_url as string,
     companyId: row.user_items?.items_swag?.company_id as string | number | null,
   }));
 }
@@ -46,8 +46,8 @@ type OwnedItem = {
   userItemId: number;
   swagId: number | null;
   name: string | null;
-  image: string | null;
-  company: string | null;
+  image_url: string | null;
+  company_id: string | null;
   listed: boolean;
 };
 
@@ -89,8 +89,8 @@ export async function getOwnedItems(walletOrUserId: string): Promise<OwnedItem[]
       items_swag (
         id,
         name,
-        image,
-        company
+        image_url,
+        company_id
       )
     `)
     .eq("user_id", userId);
@@ -115,8 +115,8 @@ export async function getOwnedItems(walletOrUserId: string): Promise<OwnedItem[]
     userItemId: o.id as number,
     swagId: o.items_swag?.id ?? null,
     name: o.items_swag?.name ?? null,
-    image: o.items_swag?.image ?? null,
-    company: o.items_swag?.company ?? null,
+    image_url: o.items_swag?.image_url ?? null,
+    company_id: o.items_swag?.company_id ?? null,
     listed: listedSet.has(o.id),
   }));
 }

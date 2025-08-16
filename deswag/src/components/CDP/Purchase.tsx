@@ -29,7 +29,7 @@ export default function Purchase(props: Props) {
       const { transactionHash } = await sendEvmTransaction({
         transaction: {
           to: (props.to ?? evmAddress) as `0x${string}`, 
-          value: props?.value * WEI_PER_ETH,       // custom amount in eth
+          value: BigInt(props?.value ?? 0) * WEI_PER_ETH,  // custom amount in eth
           gas: 21000n,                 // Standard ETH transfer gas limit
           chainId: 84532,              // Base Sepolia testnet
           type: "eip1559",             // Modern transaction type
