@@ -195,7 +195,7 @@ export default function AdminPanel() {
                       value={scannedNfc}
                       onChange={(e) => setScannedNfc(e.target.value.toUpperCase())}
                       className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-200"
-                      placeholder="8-char code"
+                      placeholder="Link"
                     />
                   </div>
                   <p className="text-xs text-slate-500">
