@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCurrentUser, useEvmAddress } from "@coinbase/cdp-hooks";
 import { AuthButton } from "@coinbase/cdp-react/components/AuthButton";
 import { saveWalletNfc, getNfcByWallet } from "@/app/utils/MapNFCToWallet";
@@ -10,27 +10,29 @@ export default function GetStartedForm() {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [linkedCode, setLinkedCode] = useState<string | null>(null);
 
-  const [linkedCode, setLinkedCode] = useState<string | null>(null); // ← store existing link
   const { currentUser } = useCurrentUser();
   const { evmAddress } = useEvmAddress();
   const router = useRouter();
 
-  // Check if this wallet is already linked
+  // host div for the hidden AuthButton
+  const authHostRef = useRef<HTMLDivElement>(null);
+  const openAuth = () => {
+    const realBtn = authHostRef.current?.querySelector("button");
+    realBtn?.click();
+  };
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      if (!evmAddress) return; // not connected yet
-      const existing = await getNfcByWallet(evmAddress); // returns string | null
+      if (!evmAddress) return;
+      const existing = await getNfcByWallet(evmAddress);
       if (cancelled) return;
       if (existing) {
         setLinkedCode(existing);
-
-        // OPTION A: redirect away (uncomment one)
-        // router.replace("/user-profile");
-        // router.replace("/"); // or wherever
-
-        // OPTION B: just show an "all set" card below (handled by render)
+        // Optionally redirect instead of showing the "all set" card
+        // router.replace("/");
       }
     })();
     return () => {
@@ -47,7 +49,7 @@ export default function GetStartedForm() {
       return;
     }
     if (!currentUser || !evmAddress) {
-      setMsg("Please connect your wallet first.");
+      setMsg("Please sign in first.");
       return;
     }
 
@@ -55,7 +57,7 @@ export default function GetStartedForm() {
     try {
       await saveWalletNfc(evmAddress, code.toUpperCase());
       setMsg("Success! Your NFC code is now linked to your wallet.");
-      setLinkedCode(code.toUpperCase()); // so the page switches to the “all set” state
+      setLinkedCode(code.toUpperCase());
     } catch (err: any) {
       setMsg(err?.message ?? "Could not set up wallet. Try again.");
     } finally {
@@ -63,7 +65,6 @@ export default function GetStartedForm() {
     }
   };
 
-  // If already linked and you chose not to redirect, show an "all set" card instead of the form
   if (linkedCode) {
     return (
       <div className="w-full max-w-xl bg-[var(--card-bg)] backdrop-blur-xl rounded-2xl shadow-sm border border-[var(--card-border)]">
@@ -80,7 +81,6 @@ export default function GetStartedForm() {
     );
   }
 
-  // Default: original Get Started UI
   return (
     <div className="w-full max-w-xl bg-[var(--card-bg)] backdrop-blur-xl rounded-2xl shadow-sm border border-[var(--card-border)]">
       <div className="p-6 md:p-8">
@@ -102,7 +102,25 @@ export default function GetStartedForm() {
           </div>
 
           {!currentUser ? (
-            <AuthButton className="w-full h-11 rounded-xl font-medium text-white shadow-sm hover:shadow-md active:scale-[.98] transition bg-gradient-to-r from-[var(--brand-500)] to-[var(--brand-600)] disabled:opacity-70" />
+            <>
+              {/* Invisible real AuthButton so the SDK works */}
+              <div
+                ref={authHostRef}
+                className="absolute opacity-0 pointer-events-none h-0 w-0 overflow-hidden"
+                aria-hidden="true"
+              >
+                <AuthButton />
+              </div>
+
+              {/* Your pastel-styled trigger */}
+              <button
+                type="button"
+                onClick={openAuth}
+                className="w-full h-11 rounded-xl font-medium text-white shadow-sm hover:shadow-md active:scale-[.98] transition bg-gradient-to-r from-[var(--brand-500)] to-[var(--brand-600)]"
+              >
+                Sign in
+              </button>
+            </>
           ) : (
             <button
               type="submit"
