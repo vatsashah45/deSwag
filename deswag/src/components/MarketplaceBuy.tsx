@@ -28,7 +28,7 @@ export default function MarketplaceBuy() {
     try {
       await purchaseListing({ listingId: id, buyer: evmAddress });
       setItems((prev) => prev.filter((p) => p.id !== id));
-      alert("Purchased (DB recorded). On-chain transfer later.");
+      //alert("Purchased (DB recorded). On-chain transfer later.");
     } catch (e: any) {
       alert(e?.message ?? "Failed to purchase");
     }
@@ -45,18 +45,26 @@ export default function MarketplaceBuy() {
             image={i.image}
             title={i.name}
             subtitle={i.companyId ? `Company #${i.companyId}` : "Community"}
-            price={`${i.priceEth.toFixed(6)} ETH`}
+            price={`${i.priceEth.toFixed(2)} ETH`}
             vendor={i.seller.slice(0, 6) + "…" + i.seller.slice(-4)}
             badge="For sale"
           />
           <div className="mt-3">
-            <button
+            <div
               onClick={() => buy(i.id)}
-              className="w-full h-10 rounded-xl font-medium text-white shadow-sm hover:shadow-md active:scale-[.98] transition bg-gradient-to-r from-[var(--brand-500)] to-[var(--brand-600)]"
+              className="w-full h-10 rounded-xl font-medium text-white shadow-sm hover:shadow-md active:scale-[.98] transition bg-gradient-to-r from-[var(--brand-500)] to-[var(--brand-600)] items-center justify-center flex"
             >
-              Buy
-            </button>
-            <Purchase></Purchase>
+            <Purchase
+              id={i.id}                       // row id in item_forsale
+              itemId={i.itemId ?? i.foreign_id} // swag item id
+              to={i.seller}                   // seller wallet
+              value={BigInt(Math.floor(i.priceEth))} // convert to bigint (ETH amount)
+              onSuccess={(id) => {
+                // ✅ remove from list after purchase
+                setItems((prev) => prev.filter((x) => x.id !== id));
+              }}
+            />
+            </div>
           </div>
         </div>
       ))}
