@@ -12,16 +12,23 @@ const tabs: { key: TabKey; label: string; icon: string }[] = [
 export default function TabNav({ tab, onChange }: { tab: TabKey; onChange: (t: TabKey) => void }) {
   return (
     <div className="w-full">
-      <div className="mx-auto max-w-3xl bg-[var(--surface-2)] backdrop-blur rounded-2xl p-1 flex gap-1 border border-[var(--border)]">
+      <div className="
+        mx-auto max-w-3xl
+        rounded-2xl p-1 flex gap-1
+        bg-[var(--surface-2)]/12 backdrop-blur-md
+        border border-[var(--border)]/40
+        shadow-sm
+      ">
         {tabs.map((t) => {
           const active = tab === t.key;
           return (
             <button
               key={t.key}
               onClick={() => onChange(t.key)}
-              className={`flex-1 py-2 rounded-xl text-sm md:text-base outline-none transition
+              className={`
+                flex-1 py-2 rounded-xl text-sm md:text-base outline-none transition
                 ${active
-                  ? "bg-white shadow-sm font-semibold text-[var(--ink-strong)]"
+                  ? "bg-[var(--surface-2)]/20 backdrop-blur-md border border-[var(--border)]/40 shadow-sm font-semibold text-[var(--ink-strong)]"
                   : "subtle hover:text-[var(--ink-strong)]"}
               `}
             >
