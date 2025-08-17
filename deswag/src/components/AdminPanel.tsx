@@ -134,19 +134,17 @@ export default function AdminPanel() {
   return (
     <div className="relative">
       {/* top-right mode slider */}
-      <div className="absolute right-0 -top-2 flex items-center gap-3">
+      <div className="fixed top-20 right-6 z-[9999] flex items-center gap-3">
         <span className={`text-xs ${mode === "private" ? "font-semibold" : "text-slate-500"}`}>Private</span>
         <button
           onClick={() => setMode(m => (m === "private" ? "public" : "private"))}
-          className={`h-6 w-12 rounded-full transition relative ${
-            mode === "public" ? "bg-green-500/70" : "bg-slate-300"
-          }`}
+          className={`h-6 w-12 rounded-full transition relative ${mode === "public" ? "bg-green-500/70" : "bg-slate-300"
+            }`}
           aria-label="Toggle mode"
         >
           <span
-            className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition ${
-              mode === "public" ? "left-6" : "left-1"
-            }`}
+            className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition ${mode === "public" ? "left-6" : "left-1"
+              }`}
           />
         </button>
         <span className={`text-xs ${mode === "public" ? "font-semibold" : "text-slate-500"}`}>Public</span>
@@ -260,29 +258,29 @@ export default function AdminPanel() {
                 {companyItems.length === 0 ? (
                   <div className="text-sm text-slate-500">No items yet.</div>
                 ) : (
-                      companyItems.map((row) => (
-        <div
-          key={row.id}
-          className="flex items-center justify-between rounded-xl border border-slate-200 p-4"
-        >
-          <div>
-            <div className="font-medium">{row.name}</div>
-            <div className="text-xs text-slate-500">
-              Quantity: {row.quantity}
-            </div>
-            {toastById[row.id] && (
-              <div className="text-xs mt-1 text-green-600">{toastById[row.id]}</div>
-            )}
-          </div>
-          <button
-            disabled={loadingById[row.id] || !scannedNfc}
-            onClick={() => claimItemForScan(row.id)}
-            className="px-4 py-2 rounded-lg bg-green-600 text-white disabled:opacity-60"
-          >
-            {loadingById[row.id] ? "Claiming…" : "Claim"}
-          </button>
-        </div>
-      ))
+                  companyItems.map((row) => (
+                    <div
+                      key={row.id}
+                      className="flex items-center justify-between rounded-xl border border-slate-200 p-4"
+                    >
+                      <div>
+                        <div className="font-medium">{row.name}</div>
+                        <div className="text-xs text-slate-500">
+                          Quantity: {row.quantity}
+                        </div>
+                        {toastById[row.id] && (
+                          <div className="text-xs mt-1 text-green-600">{toastById[row.id]}</div>
+                        )}
+                      </div>
+                      <button
+                        disabled={loadingById[row.id] || !scannedNfc}
+                        onClick={() => claimItemForScan(row.id)}
+                        className="px-4 py-2 rounded-lg bg-green-600 text-white disabled:opacity-60"
+                      >
+                        {loadingById[row.id] ? "Claiming…" : "Claim"}
+                      </button>
+                    </div>
+                  ))
                 )}
               </div>
             )}

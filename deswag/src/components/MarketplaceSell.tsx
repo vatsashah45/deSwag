@@ -94,9 +94,7 @@ const submit = async (e: React.FormEvent) => {
             </div>
 
             <div className="md:col-span-2">
-              <button className="w-full h-11 rounded-xl font-medium text-white shadow-sm hover:shadow-md active:scale-[.98] transition bg-gradient-to-r from-[var(--brand-500)] to-[var(--brand-600)]">
-                Create Listing
-              </button>
+              <button className="btn btn-primary w-full">Create Listing</button>
             </div>
           </form>
         )}
